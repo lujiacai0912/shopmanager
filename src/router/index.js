@@ -4,14 +4,15 @@ import Router from 'vue-router';
 // import Login from '../components/login';
 
 import Login from '@/components/login';
+import Home from '@/components/home';
 
 Vue.use(Router);
-// Vue.use(Login);
 
 export default new Router({
   routes: [{
     path: '/',
     name: 'home',
+    component: Home,
   },
   {
     name: 'login',
