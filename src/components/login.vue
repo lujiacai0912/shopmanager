@@ -24,32 +24,48 @@ export default {
     };
   },
   methods: {
-    handleLogin() {
-      console.log(1);
+    async handleLogin() {
       // console.log(this.$http);
-      this.$http
-        .post(`login`, this.formdata)
-        .then(res => {
-          console.log(2);
-          console.log(res);
-          const {
-            data: {
-              data,
-              meta: { msg, status }
-            }
-          } = res;
-          if(status===200){
-          this.$router.push({
-            name:'home'
-          })
+      const res = await this.$http.post(`login`, this.formdata);
+      console.log(res);
 
-          }else{
-           this.$message.error(msg);
-          }
-        })
-        .catch(err => {
-          console.log(err);
+      const {
+        data: {
+          data: { token },
+          meta: { msg, status }
+        }
+      } = res;
+      if (status === 200) {
+        localStorage.setItem("token", token);
+        // const aa = localStorage.setItem("token");
+        // console.log(aa);
+
+        this.$router.push({
+          name: "home"
         });
+      } else {
+        this.$message.error(msg);
+      }
+
+      // .then(res => {
+      //   console.log(res);
+      //   const {
+      //     data: {
+      //       data,
+      //       meta: { msg, status }
+      //     }
+      //   } = res;
+      //   if (status === 200) {
+      //     this.$router.push({
+      //       name: "home"
+      //     });
+      //   } else {
+      //     this.$message.error(msg);
+      //   }
+      // })
+      // .catch(err => {
+      //   console.log(err);
+      // });
     }
   }
 };
