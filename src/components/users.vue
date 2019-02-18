@@ -11,9 +11,7 @@
     <el-row class="seartBox">
       <el-col>
         <!-- 搜索框 -->
-        <el-input
-        class="seartInput"
-         placeholder="请输入内容" v-model="query">
+        <el-input class="seartInput" placeholder="请输入内容" v-model="query">
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
         <!-- 添加按钮 -->
@@ -21,6 +19,15 @@
       </el-col>
     </el-row>
     <!-- 表格 -->
+    <el-table :data="list" stripe style="width: 100%">
+      <el-table-column prop="name" label="#" width="80"></el-table-column>
+      <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+      <el-table-column prop="name" label="邮箱" width="140"></el-table-column>
+      <el-table-column prop="name" label="电话" width="140"></el-table-column>
+      <el-table-column prop="name" label="创建日期" width="140"></el-table-column>
+      <el-table-column prop="name" label="用户状态" width="140"></el-table-column>
+      <el-table-column prop="name" label="操作" width="200"></el-table-column>
+    </el-table>
     <!-- 分页 -->
   </el-card>
 </template>
@@ -29,8 +36,27 @@
 export default {
   data() {
     return {
-      query: ""
+      query: "",
+      pagenum: "1",
+      pagesize: "2",
+      // 表格数据
+      list: []
     };
+  },
+  created() {
+    this.getTableData();
+  },
+  methods: {
+    async getTableData() {
+      const AUTH_TOKEN = localStorage.getItem("token");
+      this.$http.defaults.headers.common["Authorization"] = AUTH_TOKEN;
+      const res = await this.$http.get(
+        `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${
+          this.pagesize
+        }`
+      );
+      console.log(res);
+    }
   }
 };
 </script>
@@ -42,7 +68,7 @@ export default {
 .seartBox {
   margin-top: 20px;
 }
-.seartInput{
+.seartInput {
   width: 350px;
 }
 </style>

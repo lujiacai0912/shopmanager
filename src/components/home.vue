@@ -134,7 +134,7 @@ if(!localStorage.getItem('token')){
   background-color: yellow;
 }
 .main {
-  background-color: green;
+  /* background-color: green; */
 }
 .middle {
   line-height: 60px;
