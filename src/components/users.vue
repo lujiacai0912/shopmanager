@@ -19,7 +19,9 @@
       </el-col>
     </el-row>
     <!-- 表格 -->
-    <el-table :data="list" stripe style="width: 100%">
+    <el-table
+    height="350px"
+    :data="list" stripe style="width: 100%">
       <el-table-column prop="id" label="#" width="80"></el-table-column>
       <el-table-column prop="username" label="姓名" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="140"></el-table-column>
@@ -34,13 +36,23 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" circle size="mini" plain="true"></el-button>
-          <el-button type="success" icon="el-icon-check" circle size="mini" plain="true"></el-button>
-          <el-button type="danger" icon="el-icon-delete" circle size="mini" plain="true"></el-button>
+          <el-button type="primary" icon="el-icon-edit" circle size="mini" plain></el-button>
+          <el-button type="success" icon="el-icon-check" circle size="mini" plain></el-button>
+          <el-button type="danger" icon="el-icon-delete" circle size="mini" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
+    <el-pagination
+    class="page"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 4, 6, 8]"
+      :page-size="2"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    ></el-pagination>
   </el-card>
 </template>
 
@@ -50,7 +62,8 @@ export default {
     return {
       query: "",
       pagenum: 1,
-      pagesize: 10,
+      pagesize: 2,
+      total:-1,
       // 表格数据
       list: []
     };
@@ -59,6 +72,17 @@ export default {
     this.getTableData();
   },
   methods: {
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pagenum = 1;
+      this.pagesize = val;
+      this.getTableData();
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagenum = val;
+      this.getTableData()
+    },
     async getTableData() {
       const AUTH_TOKEN = localStorage.getItem("token");
       this.$http.defaults.headers.common["Authorization"] = AUTH_TOKEN;
@@ -73,6 +97,7 @@ export default {
         meta: { msg, status }
       } = res.data;
       if (status === 200) {
+        this.total = data.total;
         this.list = data.users;
         console.log(this.list);
       }
@@ -90,5 +115,8 @@ export default {
 }
 .seartInput {
   width: 350px;
+}
+.page{
+  margin-top: 20px;
 }
 </style>
