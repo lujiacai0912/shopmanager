@@ -11,17 +11,21 @@
     <el-row class="seartBox">
       <el-col>
         <!-- 搜索框 -->
-        <el-input class="seartInput" placeholder="请输入内容" v-model="query">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input
+          @clear="getAllUsers()"
+          clearable
+          class="seartInput"
+          placeholder="请输入内容"
+          v-model="query"
+        >
+          <el-button slot="append" icon="el-icon-search" @click="searchUser()"></el-button>
         </el-input>
         <!-- 添加按钮 -->
         <el-button type="success">添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 表格 -->
-    <el-table
-    height="350px"
-    :data="list" stripe style="width: 100%">
+    <el-table height="350px" :data="list" stripe style="width: 100%">
       <el-table-column prop="id" label="#" width="80"></el-table-column>
       <el-table-column prop="username" label="姓名" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="140"></el-table-column>
@@ -44,7 +48,7 @@
     </el-table>
     <!-- 分页 -->
     <el-pagination
-    class="page"
+      class="page"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pagenum"
@@ -63,7 +67,7 @@ export default {
       query: "",
       pagenum: 1,
       pagesize: 2,
-      total:-1,
+      total: -1,
       // 表格数据
       list: []
     };
@@ -72,6 +76,13 @@ export default {
     this.getTableData();
   },
   methods: {
+    getAllUsers() {
+      this.getTableData();
+    },
+    searchUser() {
+      this.pagenum = 1;
+      this.getTableData();
+    },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pagenum = 1;
@@ -81,7 +92,7 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.pagenum = val;
-      this.getTableData()
+      this.getTableData();
     },
     async getTableData() {
       const AUTH_TOKEN = localStorage.getItem("token");
@@ -116,7 +127,7 @@ export default {
 .seartInput {
   width: 350px;
 }
-.page{
+.page {
   margin-top: 20px;
 }
 </style>
