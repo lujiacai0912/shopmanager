@@ -21,14 +21,24 @@
     <!-- 表格 -->
     <el-table :data="list" stripe style="width: 100%">
       <el-table-column prop="id" label="#" width="80"></el-table-column>
-      <el-table-column prop="usersname" label="姓名" width="120"></el-table-column>
+      <el-table-column prop="username" label="姓名" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="140"></el-table-column>
       <el-table-column prop="mobile" label="电话" width="140"></el-table-column>
       <el-table-column prop="create_time" label="创建日期" width="140">
         <template slot-scope="scope">{{scope.row.create_time | fmtdate}}</template>
       </el-table-column>
-      <el-table-column prop="name" label="用户状态" width="140"></el-table-column>
-      <el-table-column prop="name" label="操作" width="200"></el-table-column>
+      <el-table-column prop="name" label="用户状态" width="140">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="200">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" circle size="mini" plain="true"></el-button>
+          <el-button type="success" icon="el-icon-check" circle size="mini" plain="true"></el-button>
+          <el-button type="danger" icon="el-icon-delete" circle size="mini" plain="true"></el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <!-- 分页 -->
   </el-card>
