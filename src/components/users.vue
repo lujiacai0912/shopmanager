@@ -35,7 +35,12 @@
       </el-table-column>
       <el-table-column prop="name" label="用户状态" width="140">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+          <el-switch
+            @change="changeState(scope.row)"
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200">
@@ -56,7 +61,14 @@
             size="mini"
             plain
           ></el-button>
-          <el-button type="success" icon="el-icon-check" circle size="mini" plain></el-button>
+          <el-button
+            @click="showDiaSetRole(scope.row)"
+            type="success"
+            icon="el-icon-check"
+            circle
+            size="mini"
+            plain
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -110,6 +122,31 @@
         <el-button type="primary" @click="editUser()">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 对话框--分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="dialogFormVisibleRole">
+      <el-form label-position="left" label-width="80px" :model="formdata">
+        <el-form-item label="用户名">{{formdata.username}}</el-form-item>
+
+        <el-form-item label="角色">
+          {{selectVal}}
+          <el-select v-model="selectVal" placeholder="请选择角色">
+            <el-option disabled label="请选择" :value="-1"></el-option>
+
+            <el-option
+              v-for="(item,i) in roles"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleRole = false">取 消</el-button>
+        <el-button type="primary" @click="setRoles()">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -126,23 +163,62 @@ export default {
       // 对话框
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
+      dialogFormVisibleRole: false,
       formdata: {
         username: "",
         password: "",
         email: "",
         mobile: ""
-      }
+      },
+      selectVal: -1,
+      currUserId: -1,
+      roles: []
     };
   },
   created() {
     this.getTableData();
   },
   methods: {
+    async setRoles() {
+      const res = await this.$http.put(`users/${this.currUserId}/role`, {
+        rid: this.selectVal
+      });
+      console.log(res);
+
+      const {
+        meta: { msg, status }
+      } = res.data;
+      if (status === 200) {
+        this.dialogFormVisibleRole = false;
+      }
+
+    },
+    async showDiaSetRole(user) {
+      this.currUserId = user.id
+      this.currUsername = user.username;
+      this.formdata = user;
+      this.dialogFormVisibleRole = true;
+      const res = await this.$http.get(`roles`);
+      // console.log(res);
+      this.roles = res.data.data;
+      const res2 = await this.$http.get(`users/${user.id}`);
+      this.selectVal = res2.data.data.rid;
+    },
+    async changeState(user) {
+      //  console.log(user);
+
+      const res = await this.$http.put(
+        `users/${user.id}/state/${user.mg_state}`
+      );
+      console.log(res);
+    },
     async editUser() {
       const res = await this.$http.put(
         `users/${this.formdata.id}`,
         this.formdata
       );
+
+
       console.log(res);
       const {
         meta: { msg, status }
@@ -151,6 +227,8 @@ export default {
         this.dialogFormVisibleEdit = false;
         this.getTableData();
       }
+
+
     },
     showDiaEditUser(user) {
       this.formdata = user;
