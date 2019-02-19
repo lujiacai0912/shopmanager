@@ -40,9 +40,23 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" circle size="mini" plain></el-button>
+          <el-button
+            @click="showDiaEditUser(scope.row)"
+            type="primary"
+            icon="el-icon-edit"
+            circle
+            size="mini"
+            plain
+          ></el-button>
+          <el-button
+            @click="showMsgBoxDele(scope.row)"
+            type="danger"
+            icon="el-icon-delete"
+            circle
+            size="mini"
+            plain
+          ></el-button>
           <el-button type="success" icon="el-icon-check" circle size="mini" plain></el-button>
-          <el-button type="danger" icon="el-icon-delete" circle size="mini" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -78,6 +92,24 @@
         <el-button type="primary" @click="addUser()">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 对话框--编辑用户 -->
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+      <el-form label-position="left" label-width="80px" :model="formdata">
+        <el-form-item label="用户名">
+          <el-input disabled v-model="formdata.username"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="formdata.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="formdata.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -93,6 +125,7 @@ export default {
       list: [],
       // 对话框
       dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
       formdata: {
         username: "",
         password: "",
@@ -105,6 +138,47 @@ export default {
     this.getTableData();
   },
   methods: {
+    async editUser() {
+      const res = await this.$http.put(
+        `users/${this.formdata.id}`,
+        this.formdata
+      );
+      console.log(res);
+      const {
+        meta: { msg, status }
+      } = res.data;
+      if (status === 200) {
+        this.dialogFormVisibleEdit = false;
+        this.getTableData();
+      }
+    },
+    showDiaEditUser(user) {
+      this.formdata = user;
+      this.dialogFormVisibleEdit = true;
+    },
+    showMsgBoxDele(user) {
+      // console.log(user);
+
+      this.$confirm("是否把我删掉？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`users/${user.id}`);
+          const {
+            meta: { msg, status }
+          } = res.data;
+          if (status === 200) {
+            this.$message.success("msg");
+            this.pagenum = 1;
+            this.getTableData();
+          }
+        })
+        .catch(() => {
+          this.$message.success("取消删除");
+        });
+    },
     async addUser() {
       const res = await this.$http.post(`users`, this.formdata);
       console.log(res);
@@ -118,7 +192,7 @@ export default {
     },
     showDiaAddUser() {
       this.dialogFormVisibleAdd = true;
-      this.formdata = {}; 
+      this.formdata = {};
     },
     getAllUsers() {
       this.getTableData();
