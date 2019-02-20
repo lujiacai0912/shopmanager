@@ -134,7 +134,7 @@
             <el-option disabled label="请选择" :value="-1"></el-option>
 
             <el-option
-              v-for="(item,i) in roles"
+              v-for="(item) in roles"
               :key="item.id"
               :label="item.roleName"
               :value="item.id"

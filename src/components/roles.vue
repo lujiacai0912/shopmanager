@@ -4,26 +4,53 @@
     <el-button class="btn" type="primary">添加角色</el-button>
     <!-- 表格 -->
     <el-table height="350px" :data="roles" stripe style="width: 100%">
+      <el-table-column type="expand" width="200">
+        <template slot-scope="scope">
+          <!-- 行列布局 -->
+          <el-row class="level1" v-for="(item1) in scope.row.children" :key="item1.id">
+            <el-col :span="4">
+              <el-tag
+                @close="deleRights(scope.row,item1)"
+                closable
+                type="success"
+              >{{item1.authName}}</el-tag>
+              <i class="el-icon-arrow-right"></i>
+            </el-col>
+            <el-col :span="20">
+              <el-row class="level2" v-for="(item2) in item1.children" :key="item2.id">
+                <el-col :span="4">
+                  <el-tag
+                  @close="deleRights(scope.row,item2)"
+                  closable type="warning">{{item2.authName}}</el-tag>
+                  <i class="el-icon-arrow-right"></i>
+                </el-col>
+                <el-col :span="20">
+                  <el-tag
+                  @close="deleRights(scope.row,item3)"
+                    closable
+                    type="info"
+                    v-for="(item3) in item2.children"
+                    :key="item3.id"
+                  >{{item3.authName}}</el-tag>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+          <el-row v-if="scope.row.children.length===0">
+            <el-col>
+              <span>未分配权限</span>
+            </el-col>
+          </el-row>
+        </template>
+      </el-table-column>
       <el-table-column type="index" label="#" width="80"></el-table-column>
       <el-table-column prop="roleName" label="角色名称" width="200"></el-table-column>
       <el-table-column prop="roleDesc" label="角色描述" width="300"></el-table-column>
 
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            circle
-            size="mini"
-            plain
-          ></el-button>
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            circle
-            size="mini"
-            plain
-          ></el-button>
+          <el-button type="primary" icon="el-icon-edit" circle size="mini" plain></el-button>
+          <el-button type="danger" icon="el-icon-delete" circle size="mini" plain></el-button>
           <el-button
             @click="showDiaSetRights(scope.row)"
             type="success"
@@ -40,36 +67,56 @@
 
 <script>
 export default {
-  data(){
+  data() {
     return {
-      roles:[]
-    }
+      roles: []
+    };
   },
-  created(){
-    this.getRoles()
+  created() {
+    this.getRoles();
   },
-  methods:{
-    showDiaSetRights(){},
-    async getRoles(){
+  methods: {
+    async deleRights(role, rights) {
+      //  console.log(role,rights);
+
+      const res = await this.$http.delete(
+        `roles/${role.id}/rights/${rights.id}`
+      );
+      console.log(res);
+      const {
+        meta: { msg, status },
+        data
+      } = res.data;
+      if (status === 200) {
+        this.$message.success(msg);
+        role.children = data;
+      }
+    },
+    showDiaSetRights() {},
+    async getRoles() {
       const res = await this.$http.get(`roles`);
       console.log(res);
       const {
-        meta:{msg,status},
+        meta: { msg, status },
         data
       } = res.data;
-      if(status===200){
+      if (status === 200) {
         this.roles = data;
       }
     }
   }
-}
+};
 </script>
 
 <style>
-.box{
+.box {
   height: 100%;
 }
-.btn{
+.btn {
   margin-top: 20px;
+}
+.level1,
+.level2 {
+  margin-top: 10px;
 }
 </style>
