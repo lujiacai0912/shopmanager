@@ -4,7 +4,7 @@ import Vue from 'vue';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/css/base.css';
-import HttpServer from '@/http.js';
+import HttpServer from '@/http';
 import moment from 'moment';
 import CusBread from '@/components/cusBread';
 import App from './App';
