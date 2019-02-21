@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
+import {Message} from 'element-ui';
 // import Login from '../components/login';
 
 import Login from '@/components/login';
@@ -11,7 +11,7 @@ import Roles from '@/components/roles';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [{
     path: '/',
     name: 'home',
@@ -30,10 +30,29 @@ export default new Router({
       name: 'roles',
       path: '/roles',
       component: Roles,
-    }],
+    },
+    ],
   }, {
     name: 'login',
     path: '/login',
     component: Login,
   }],
 });
+router.beforeEach((to, from, next) => {
+  // console.log('路由守卫执行----');
+  // console.log(to, from);
+  // next();
+  if (to.name === 'login') {
+    next();
+  } else {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      Message.warning("请先登录！")
+      router.push({
+        name: 'login',
+      });
+      return;
+    } next();
+  }
+});
+export default router;
