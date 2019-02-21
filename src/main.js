@@ -27,3 +27,4 @@ new Vue({
   },
   template: '<App/>',
 });
+// <!-- npm run lint fix -->
