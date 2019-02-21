@@ -67,6 +67,7 @@
     <!-- 对话框 -->
     <el-dialog title="分配权限" :visible.sync="dialogFormVisible">
       <el-tree
+        ref="treeDom"
         :data="treelist"
         show-checkbox
         node-key="id"
@@ -76,7 +77,7 @@
       ></el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="setRights">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -93,20 +94,43 @@ export default {
       defaultProps: {
         label: "authName",
         children: "children"
-      }
+      },
+      currRoleId: -1
     };
   },
   created() {
     this.getRoles();
   },
   methods: {
+    async setRights() {
+      const arr1 = this.$refs.treeDom.getCheckedKeys();
+      // console.log(arr1);
+      const arr2 = this.$refs.treeDom.getHalfCheckedKeys();
+      // console.log(arr2);
+      const arr = [...arr1, ...arr2];
+      // console.log(arr);
+
+      const res = await this.$http.post(`roles/${this.currRoleId}/rights`, {
+        rids: arr.join(",")
+      });
+
+      console.log(res);
+      const {
+        meta: { msg, status },
+        data
+      } = res.data;
+      if (status === 200) {
+        this.dialogFormVisible = false;
+        this.getRoles();
+      }
+    },
     async deleRights(role, rights) {
       //  console.log(role,rights);
 
       const res = await this.$http.delete(
         `roles/${role.id}/rights/${rights.id}`
       );
-      console.log(res);
+      // console.log(res);
       const {
         meta: { msg, status },
         data
@@ -117,15 +141,16 @@ export default {
       }
     },
     async showDiaSetRights(role) {
+      this.currRoleId = role.id;
       const res = await this.$http.get(`rights/tree`);
-      console.log(res);
+      // console.log(res);
       const {
         meta: { msg, status },
         data
       } = res.data;
       if (status === 200) {
-      this.treelist = data;
-      // console.log(this.treelist);
+        this.treelist = data;
+        // console.log(this.treelist);
         // const temp =[];
         // this.treelist.forEach(item1 => {
         //   temp.push(item1.id);
@@ -138,17 +163,16 @@ export default {
         // });
         // // console.log(temp);
         // this.arrExpand = temp;
-        const temp2 =[];
+        const temp2 = [];
         role.children.forEach(item1 => {
           item1.children.forEach(item2 => {
-             item2.children.forEach(item3 => {
-            temp2.push(item3.id);
-          });
+            item2.children.forEach(item3 => {
+              temp2.push(item3.id);
+            });
           });
         });
-          // console.log(temp2);
-          this.arrCheck = temp2;
-
+        // console.log(temp2);
+        this.arrCheck = temp2;
       }
       this.dialogFormVisible = true;
     },
