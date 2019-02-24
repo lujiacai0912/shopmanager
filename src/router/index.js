@@ -1,13 +1,14 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import {Message} from 'element-ui';
+import { Message } from 'element-ui';
 // import Login from '../components/login';
-
 import Login from '@/components/login';
 import Home from '@/components/home';
 import Users from '@/components/users';
 import Rights from '@/components/rights';
 import Roles from '@/components/roles';
+import Goodslist from '@/components/goodslist';
+import Goodsadd from '@/components/goodsadd';
 
 Vue.use(Router);
 
@@ -31,6 +32,16 @@ const router = new Router({
       path: '/roles',
       component: Roles,
     },
+    {
+      name: 'goods',
+      path: '/goods',
+      component: Goodslist,
+    },
+    {
+      name: 'goodsadd',
+      path: '/goodsadd',
+      component: Goodsadd,
+    },
     ],
   }, {
     name: 'login',
@@ -47,7 +58,7 @@ router.beforeEach((to, from, next) => {
   } else {
     const token = localStorage.getItem('token');
     if (!token) {
-      Message.warning("请先登录！")
+      Message.warning('请先登录');
       router.push({
         name: 'login',
       });

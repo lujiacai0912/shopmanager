@@ -7,8 +7,8 @@ import '@/assets/css/base.css';
 import HttpServer from '@/http';
 import moment from 'moment';
 import CusBread from '@/components/cusBread';
-import App from './App';
 import router from './router';
+import App from './App';
 
 Vue.use(HttpServer);
 Vue.use(ElementUI);
