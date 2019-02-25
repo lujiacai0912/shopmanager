@@ -9,6 +9,9 @@ import Rights from '@/components/rights';
 import Roles from '@/components/roles';
 import Goodslist from '@/components/goodslist';
 import Goodsadd from '@/components/goodsadd';
+import Cateparams from '@/components/cateparams';
+import Goodscate from '@/components/goodscate';
+
 
 Vue.use(Router);
 
@@ -42,6 +45,16 @@ const router = new Router({
       path: '/goodsadd',
       component: Goodsadd,
     },
+    {
+      name: 'params',
+      path: '/params',
+      component: Cateparams,
+    },
+    {
+      name: 'categories',
+      path: '/categories',
+      component: Goodscate,
+    },
     ],
   }, {
     name: 'login',
@@ -63,7 +76,8 @@ router.beforeEach((to, from, next) => {
         name: 'login',
       });
       return;
-    } next();
+    }
+    next();
   }
 });
 export default router;

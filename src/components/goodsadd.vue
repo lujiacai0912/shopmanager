@@ -102,7 +102,7 @@ export default {
         attrs: []
       },
       options: [],
-      selectedOptions: [],
+      selectedOptions: [1,3,6],
       defaultProp: {
         label: "cat_name",
         value: "cat_id"
@@ -184,6 +184,11 @@ export default {
       if (this.active === "2" || this.active === "3") {
         if (this.selectedOptions.length !== 3) {
           this.$message.error("请先选择三级分类");
+          if (this.active==="2") {
+            this.arrDy = []
+          } else {
+            this.arrStatic = []
+          }
           return;
         }
         // 获取静态参数数据
